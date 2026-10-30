@@ -1,0 +1,17 @@
+/node_modules
+/.next
+/out
+/build
+.DS_Store
+*.pem
+npm-debug.log*
+.env*.local
+.env
+/.data
+/coverage
+next-env.d.ts
+
+# generated
+invite-links.csv
+
+.vercel
