@@ -39,6 +39,7 @@ export default function YearRibbon() {
 
       <style jsx global>{`
         .yr-ribbon {
+          position: relative;
           margin-top: clamp(60px, 8vw, 110px);
         }
         .yr-legend {

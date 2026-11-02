@@ -16,6 +16,9 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
   const ref = useRef<HTMLDivElement>(null);
   const player = useRef<PlayerRef>(null);
   const seen = useInView(ref, { margin: "-20% 0px" });
+  // the film is client-only: its float-precise inline styles never match SSR
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
     <section className="beat" id="invite">
@@ -59,6 +62,7 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
           transition={{ duration: 1.4, ease }}
           onViewportEnter={() => player.current?.play()}
         >
+          {mounted ? (
           <Player
             ref={player}
             component={GuestFilm}
@@ -72,6 +76,7 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
             loop
             acknowledgeRemotionLicense
           />
+          ) : null}
         </motion.div>
       </div>
 

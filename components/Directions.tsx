@@ -35,8 +35,9 @@ const items = [
     stat: "79",
     statL: "программ",
     color: "#6094ea",
-    img: "/images/mtaa/software-erp.png",
+    img: "/images/mtaa/erp-portal.png",
     pos: "0% 0%",
+    frame: true,
   },
   {
     n: "04",
@@ -94,7 +95,21 @@ export default function Directions() {
                   viewport={{ once: true, margin: "-10% 0px" }}
                   transition={{ duration: 1.2, ease, delay: 0.2 }}
                 >
-                  <Image src={it.img} alt={it.title} fill sizes="(max-width: 860px) 100vw, 420px" style={{ objectFit: "cover", objectPosition: it.pos ?? "50% 50%" }} />
+                  {it.frame ? (
+                    <div className="dir-browser">
+                      <div className="dir-browser-bar">
+                        <i />
+                        <i />
+                        <i />
+                        <span>erp.usug.mn</span>
+                      </div>
+                      <div className="dir-browser-view">
+                        <Image src={it.img} alt="УСУГ-ын дотоод ERP систем" fill sizes="(max-width: 860px) 100vw, 420px" style={{ objectFit: "cover", objectPosition: it.pos }} />
+                      </div>
+                    </div>
+                  ) : (
+                    <Image src={it.img} alt={it.title} fill sizes="(max-width: 860px) 100vw, 420px" style={{ objectFit: "cover", objectPosition: it.pos ?? "50% 50%" }} />
+                  )}
                 </motion.div>
               ) : null}
               <div className="dir-body">
@@ -155,6 +170,51 @@ export default function Directions() {
           position: relative;
           height: clamp(170px, 16vw, 230px);
           flex-shrink: 0;
+        }
+        .dir-browser {
+          position: absolute;
+          left: 9%;
+          right: -14%;
+          top: 14%;
+          bottom: -18%;
+          border-radius: 10px;
+          overflow: hidden;
+          background: #e8eef5;
+          box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.12);
+          transform: perspective(900px) rotateY(-14deg) rotateX(6deg);
+          transform-origin: left center;
+          transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .dir-card:hover .dir-browser {
+          transform: perspective(900px) rotateY(-6deg) rotateX(3deg);
+        }
+        .dir-browser-bar {
+          height: 22px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 0 9px;
+          background: #d5dde7;
+        }
+        .dir-browser-bar i {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #9aa8b8;
+        }
+        .dir-browser-bar span {
+          margin-left: 8px;
+          font-family: var(--font-mono);
+          font-size: 9.5px;
+          color: #5b6b7d;
+        }
+        .dir-browser-view {
+          position: absolute;
+          inset: 22px 0 0 0;
+        }
+        .dir-card:has(.dir-browser) .dir-img {
+          background: radial-gradient(circle at 30% 30%, rgba(96, 148, 234, 0.35), transparent 70%);
+          overflow: hidden;
         }
         .dir-img img {
           transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
