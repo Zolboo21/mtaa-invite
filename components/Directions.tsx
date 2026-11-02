@@ -55,7 +55,7 @@ const items = [
     statL: "хяналт",
     color: "#f6dd8f",
     img: "/images/mtaa/control-room.png",
-    pos: "50% 35%",
+    pos: "50% 28%",
   },
   {
     n: "06",
