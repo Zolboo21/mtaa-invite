@@ -1,0 +1,22 @@
+{
+  "name": "mtaa-invite-videos",
+  "version": "1.0.0",
+  "description": "Remotion motion graphics for the MTAA 20-year invite site",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio --port=3001",
+    "render:all": "node render-all.mjs",
+    "lint": "tsc"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.533",
+    "@remotion/google-fonts": "4.0.533",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.533"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "typescript": "5.9.3"
+  }
+}

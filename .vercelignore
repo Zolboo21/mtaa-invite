@@ -3,3 +3,5 @@ node_modules
 .data
 .git
 invite-links.csv
+remotion/node_modules
+remotion/out

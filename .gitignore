@@ -15,3 +15,7 @@ next-env.d.ts
 invite-links.csv
 
 .vercel
+
+# remotion
+/remotion/node_modules
+/remotion/out

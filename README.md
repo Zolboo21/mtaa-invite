@@ -94,3 +94,22 @@ lib/store.ts          RSVP хадгалах давхарга (KV / файл)
 public/images/team/   хамт олны зургууд
 scripts/make-links.mjs линк үүсгэгч
 ```
+
+---
+
+## Remotion видеонууд (`remotion/`)
+
+Сайтын арын видеонуудыг Remotion-оор кодоор үүсгэдэг (тусдаа `package.json`, Next build-д нөлөөлөхгүй).
+
+```bash
+cd remotion
+npm install
+npm run studio        # засварлах самбар: http://localhost:3001
+npm run render:all    # → public/videos/*.mp4 + *.jpg (poster)
+```
+
+| Composition | Хэрэглэгдэх газар |
+|---|---|
+| `hero-loop` / `hero-loop-vertical` | Hero арын видео (утсан дээр босоо хувилбар) |
+| `title-20` | "20 жил" кино хэсэг |
+| `milestones` | Түүхэн замнал хэсгийн видео (`data/timeline.ts`-ээс уншина) |
