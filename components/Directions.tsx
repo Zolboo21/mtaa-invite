@@ -35,6 +35,8 @@ const items = [
     stat: "79",
     statL: "программ",
     color: "#6094ea",
+    img: "/images/mtaa/software-erp.png",
+    pos: "0% 0%",
   },
   {
     n: "04",
@@ -92,7 +94,7 @@ export default function Directions() {
                   viewport={{ once: true, margin: "-10% 0px" }}
                   transition={{ duration: 1.2, ease, delay: 0.2 }}
                 >
-                  <Image src={it.img} alt={it.title} fill sizes="(max-width: 860px) 100vw, 420px" style={{ objectFit: "cover" }} />
+                  <Image src={it.img} alt={it.title} fill sizes="(max-width: 860px) 100vw, 420px" style={{ objectFit: "cover", objectPosition: it.pos ?? "50% 50%" }} />
                 </motion.div>
               ) : null}
               <div className="dir-body">
@@ -149,13 +151,10 @@ export default function Directions() {
         .dir-card:hover::before {
           opacity: 0.2;
         }
-        .dir-card.has-img {
-          grid-row: span 2;
-        }
         .dir-img {
           position: relative;
-          flex: 1;
-          min-height: 220px;
+          height: clamp(170px, 16vw, 230px);
+          flex-shrink: 0;
         }
         .dir-img img {
           transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
@@ -214,9 +213,6 @@ export default function Directions() {
         @media (max-width: 620px) {
           .dir-grid {
             grid-template-columns: 1fr;
-          }
-          .dir-card.has-img {
-            grid-row: auto;
           }
         }
       `}</style>
