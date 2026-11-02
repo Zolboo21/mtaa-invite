@@ -18,13 +18,18 @@ export default function TeamHero() {
   return (
     <div className="th" ref={ref}>
       <motion.div className="th-frame" style={{ clipPath }}>
+        {/* blurred fill behind; the 2:1 group photo itself is never cropped */}
+        <div className="th-fill" aria-hidden>
+          <Image src="/images/team/6.jpg" alt="" fill sizes="40vw" style={{ objectFit: "cover" }} />
+        </div>
         <motion.div className="th-img" style={{ y }}>
           <Image
             src="/images/team/6.jpg"
             alt="МТАА-ны нэгдсэн хамт олон"
-            fill
+            width={2000}
+            height={1000}
             sizes="100vw"
-            style={{ objectFit: "cover", objectPosition: "50% 40%" }}
+            style={{ width: "100%", height: "auto", display: "block" }}
           />
         </motion.div>
         <div className="th-shade" />
@@ -46,14 +51,24 @@ export default function TeamHero() {
           height: 100svh;
           overflow: hidden;
         }
+        .th-fill {
+          position: absolute;
+          inset: -40px;
+          filter: blur(40px) brightness(0.35) saturate(1.2);
+        }
         .th-img {
           position: absolute;
-          inset: -10% 0;
+          left: 0;
+          right: 0;
+          top: 47%;
+          translate: 0 -50%;
+          width: min(100%, 140vh, 1800px);
+          margin: 0 auto;
         }
         .th-shade {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, rgba(7, 12, 20, 0.15) 50%, rgba(7, 12, 20, 0.9));
+          background: linear-gradient(180deg, rgba(7, 12, 20, 0) 45%, rgba(7, 12, 20, 0.92) 92%);
         }
         .th-cap {
           position: absolute;
