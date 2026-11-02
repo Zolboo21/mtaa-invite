@@ -8,6 +8,10 @@ type Props = {
   children: React.ReactNode;
 };
 
+/**
+ * Preloader (yaas-energy pattern): giant type + 0→100% counter while the
+ * hero video buffers, then the "open invitation" button that starts music.
+ */
 export default function IntroGate({
   audioSrc = "/music/music.mp3",
   volume = 0.35,
@@ -16,6 +20,7 @@ export default function IntroGate({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [open, setOpen] = useState(true);
   const [closing, setClosing] = useState(false);
+  const [pct, setPct] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,6 +35,37 @@ export default function IntroGate({
     };
   }, [audioSrc, volume]);
 
+  // counter: eases toward 90% on a timer, finishes once the page + hero video are ready
+  useEffect(() => {
+    const t0 = performance.now();
+    let doneAt = 0;
+    const finish = () => (doneAt ||= performance.now());
+    const vid = () => document.querySelector<HTMLVideoElement>(".hero video");
+    const check = setInterval(() => {
+      const v = vid();
+      if (document.readyState === "complete" && (!v || v.readyState >= 3)) finish();
+    }, 150);
+    const fallback = setTimeout(finish, 4500);
+    // time-based so it also completes in throttled background tabs
+    const tick = setInterval(() => {
+      const now = performance.now();
+      const base = 90 * (1 - Math.exp(-(now - t0) / 1100));
+      const end = doneAt ? Math.min(1, (now - doneAt) / 600) : 0;
+      const p = Math.round(base + (100 - base) * end);
+      setPct(p);
+      if (p >= 100) clearInterval(tick);
+    }, 30);
+    return () => {
+      clearInterval(tick);
+      clearInterval(check);
+      clearTimeout(fallback);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.style.overflow = open ? "hidden" : "";
+  }, [open]);
+
   async function handleEnter() {
     setError(null);
     const a = audioRef.current;
@@ -42,68 +78,145 @@ export default function IntroGate({
       setError("Дуу эхлүүлэх боломжгүй байна. Browser-ийн autoplay тохиргоог шалгана уу.");
     } finally {
       setClosing(true);
-      setTimeout(() => setOpen(false), 650);
+      setTimeout(() => setOpen(false), 1100);
     }
   }
 
+  const ready = pct >= 100;
   return (
     <>
       {children}
 
       {open && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 24,
-            background: "rgba(10,12,16,0.55)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
-            opacity: closing ? 0 : 1,
-            transition: "opacity 0.6s ease",
-          }}
-        >
-          <div
-            style={{
-              width: "min(440px, 100%)",
-              textAlign: "center",
-              background: "linear-gradient(180deg, rgba(36,39,45,0.92), rgba(20,22,27,0.94))",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: 20,
-              padding: "40px 32px 34px",
-              boxShadow: "0 30px 80px rgba(0,0,0,0.55)",
-              color: "#eef2f6",
-              transform: closing ? "translateY(8px) scale(0.98)" : "none",
-              transition: "transform 0.6s ease",
-            }}
-          >
-            <img
-              src="/images/logos/anniv-20.png"
-              alt="МТАА 20 жил"
-              width={132}
-              style={{ width: 132, height: "auto", display: "block", margin: "0 auto 18px" }}
-            />
-            <h1 style={{ fontSize: 22, fontWeight: 700, margin: "0 0 10px" }}>
-              Тавтай морил
-            </h1>
-            <p style={{ margin: "0 0 26px", fontSize: 14.5, lineHeight: 1.6, color: "#a7b4c1" }}>
-              Доорх товчийг дармагц урилга нээгдэж, баярын хөгжим эхэлнэ.
-            </p>
-            <button type="button" className="btn btn-gold" onClick={handleEnter} style={{ minWidth: 190 }}>
+        <div role="dialog" aria-modal="true" className={`gate ${closing ? "out" : ""} ${ready ? "ready" : ""}`}>
+          <div className="gate-word" aria-hidden>
+            <span>МТАА</span>
+          </div>
+
+          <div className="gate-center">
+            <img src="/images/logos/anniv-20.png" alt="МТАА 20 жил" width={132} className="gate-logo" />
+            <p className="gate-hello">Тавтай морил</p>
+            <button type="button" className="btn btn-gold gate-btn" onClick={handleEnter} disabled={!ready}>
               Урилга нээх
             </button>
-            {error && (
-              <p style={{ marginTop: 16, fontSize: 12.5, color: "#ffb4a8" }}>{error}</p>
-            )}
+            {error && <p className="gate-err">{error}</p>}
           </div>
+
+          <div className="gate-foot">
+            <span>[ УРИЛГА АЧААЛЖ БАЙНА ]</span>
+            <span className="gate-pct">{pct}%</span>
+          </div>
+          <div className="gate-bar" style={{ transform: `scaleX(${pct / 100})` }} />
         </div>
       )}
+
+      <style jsx global>{`
+        .gate {
+          position: fixed;
+          inset: 0;
+          z-index: 1000;
+          background: radial-gradient(ellipse at 50% 60%, #1b2733, #0b0e12 70%);
+          color: #eef2f6;
+          display: grid;
+          place-items: center;
+          overflow: hidden;
+          clip-path: inset(0 0 0 0);
+          transition: clip-path 1.05s cubic-bezier(0.77, 0, 0.18, 1);
+        }
+        .gate.out {
+          clip-path: inset(0 0 100% 0);
+        }
+        .gate-word {
+          position: absolute;
+          inset: auto 0 6vh 0;
+          text-align: center;
+          font-weight: 800;
+          font-size: 31vw;
+          line-height: 0.8;
+          letter-spacing: -0.06em;
+          color: transparent;
+          -webkit-text-stroke: 1px rgba(238, 242, 246, 0.12);
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .gate-word span {
+          display: inline-block;
+          background: linear-gradient(90deg, rgba(70, 198, 242, 0.25), rgba(246, 221, 143, 0.25));
+          -webkit-background-clip: text;
+          background-clip: text;
+          animation: gate-rise 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes gate-rise {
+          from { transform: translateY(60%); }
+          to { transform: translateY(0); }
+        }
+        .gate-center {
+          position: relative;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
+          margin-top: -10vh;
+        }
+        .gate-logo {
+          width: 132px;
+          height: auto;
+          filter: drop-shadow(0 18px 50px rgba(0, 0, 0, 0.5));
+        }
+        .gate-hello {
+          font-family: var(--font-serif);
+          font-style: italic;
+          font-size: 30px;
+        }
+        .gate-btn {
+          min-width: 200px;
+          opacity: 0;
+          transform: translateY(10px);
+          transition: opacity 0.6s ease, transform 0.6s ease, filter 0.2s ease;
+        }
+        .gate:not(.ready) .gate-btn {
+          opacity: 0;
+        }
+        .gate.ready .gate-btn {
+          opacity: 1;
+          transform: none;
+        }
+        .gate-err {
+          font-size: 12.5px;
+          color: #ffb4a8;
+        }
+        .gate-foot {
+          position: absolute;
+          left: 32px;
+          right: 32px;
+          bottom: 26px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          font-family: var(--font-mono);
+          font-size: 11.5px;
+          letter-spacing: 0.08em;
+          color: #8193a3;
+        }
+        .gate-pct {
+          font-family: var(--font-serif);
+          font-style: italic;
+          font-size: 56px;
+          line-height: 1;
+          color: #f6dd8f;
+          letter-spacing: 0;
+        }
+        .gate-bar {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #46c6f2, #f6dd8f);
+          transform-origin: left;
+        }
+      `}</style>
     </>
   );
 }

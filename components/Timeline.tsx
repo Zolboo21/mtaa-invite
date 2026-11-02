@@ -1,10 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { milestones } from "@/data/timeline";
 import { event } from "@/data/event";
-import { ease } from "./motion";
 
 // Гол тэмдэглэлт жилүүд (бүрэн 20 үйл явдал mtaa.vercel.app дээр байгаа)
 const keyYears = ["1987", "2005", "2006", "2008–2009", "2013", "2014", "2018–2019"];
@@ -13,140 +12,148 @@ const items = keyYears
   .map((y) => milestones.find((m) => m.year === y))
   .filter(Boolean) as typeof milestones;
 
+/**
+ * Sticky stacking cards (yaas-energy pattern): each milestone pins and the
+ * next one slides over it; covered cards shrink and dim.
+ */
 export default function Timeline() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 75%", "end 60%"] });
-  const fill = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
 
   return (
-    <div className="tl" ref={ref}>
-      <div className="tl-rail" aria-hidden>
-        <motion.div className="tl-fill" style={{ scaleY: fill }} />
-      </div>
-      {items.map((m) => {
-        const founding = m.year === String(event.foundedYear);
-        return (
-          <motion.div
-            className="row"
-            key={m.year}
-            data-founding={founding}
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-15% 0px" }}
-            transition={{ duration: 0.8, ease }}
-          >
-            <span className="tl-dot" aria-hidden />
-            <div className="num yr">{m.year}</div>
-            <div className="body">
-              <h3 className="t">
-                {m.title.replace(" ★", "")}
-                {founding && <span className="tag">Албаны үүсэл</span>}
-              </h3>
-              <p className="d">{m.text}</p>
-            </div>
-          </motion.div>
-        );
-      })}
+    <div className="stack" ref={ref}>
+      {items.map((m, i) => (
+        <Card key={m.year} i={i} m={m} progress={scrollYProgress} />
+      ))}
 
       <style jsx global>{`
-        .tl {
+        .stack {
           position: relative;
-          margin-top: 6px;
-          padding-left: 34px;
+          margin-top: 10px;
         }
-        .tl-rail {
-          position: absolute;
-          left: 6px;
-          top: 30px;
-          bottom: 30px;
-          width: 2px;
-          background: var(--line);
-        }
-        .tl-fill {
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(180deg, var(--cyan), var(--gold));
-          transform-origin: top;
-        }
-        .tl .row {
-          position: relative;
-          display: grid;
-          grid-template-columns: 150px 1fr;
-          gap: 28px;
-          padding: 26px 0;
-          border-top: 1px solid var(--line-2);
-          align-items: start;
-        }
-        .tl .row:first-of-type {
-          border-top: 1px solid var(--line);
-        }
-        .tl-dot {
-          position: absolute;
-          left: -34px;
-          top: 34px;
-          width: 14px;
-          height: 14px;
-          border-radius: 50%;
-          background: var(--paper);
-          border: 2px solid var(--cyan);
-          transition: transform 0.3s ease, background 0.3s ease;
-        }
-        .tl .row:hover .tl-dot {
-          transform: scale(1.4);
-          background: var(--cyan);
-        }
-        .tl .yr {
-          font-size: clamp(26px, 3.4vw, 38px);
-          font-weight: 700;
-          letter-spacing: -0.02em;
-          color: var(--ink);
-          line-height: 1.1;
-          transition: color 0.3s ease;
-        }
-        .tl .row:hover .yr {
-          color: var(--cyan);
-        }
-        .tl .row[data-founding="true"] .yr {
-          color: var(--gold-bright);
-        }
-        .tl .row[data-founding="true"] .tl-dot {
-          border-color: var(--gold);
-          background: var(--gold);
-          box-shadow: 0 0 0 6px rgba(233, 194, 95, 0.18);
-        }
-        .tl .t {
-          font-size: 18px;
-          font-weight: 600;
-          margin-bottom: 8px;
+        .scard-wrap {
+          position: sticky;
+          height: 78vh;
           display: flex;
-          align-items: baseline;
-          gap: 12px;
-          flex-wrap: wrap;
+          align-items: flex-start;
+          justify-content: center;
         }
-        .tl .tag {
+        .scard {
+          position: relative;
+          width: 100%;
+          height: min(64vh, 520px);
+          border-radius: 26px;
+          padding: clamp(26px, 4vw, 52px);
+          display: grid;
+          grid-template-columns: 1fr 1.1fr;
+          gap: clamp(20px, 4vw, 56px);
+          align-items: end;
+          overflow: hidden;
+          transform-origin: top center;
+          border: 1px solid var(--line);
+          box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.35);
+          background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+          background-size: 48px 48px;
+        }
+        .scard .idx {
+          position: absolute;
+          top: clamp(22px, 3vw, 36px);
+          left: clamp(26px, 4vw, 52px);
+          font-family: var(--font-mono);
           font-size: 12px;
-          font-weight: 600;
-          color: var(--gold-bright);
-          border: 1px solid rgba(233, 194, 95, 0.4);
-          border-radius: 4px;
-          padding: 2px 8px;
+          letter-spacing: 0.08em;
+          color: rgba(238, 242, 246, 0.55);
         }
-        .tl .d {
-          color: var(--ink-2);
+        .scard .tag {
+          position: absolute;
+          top: clamp(18px, 3vw, 32px);
+          right: clamp(22px, 4vw, 48px);
+          font-family: var(--font-mono);
+          font-size: 11.5px;
+          color: #2a2000;
+          background: var(--gold-bright);
+          border-radius: 99px;
+          padding: 6px 12px;
+        }
+        .scard .yr {
+          font-family: var(--font-serif);
+          font-style: italic;
+          font-size: clamp(64px, 11vw, 168px);
+          line-height: 0.85;
+          letter-spacing: -0.02em;
+          white-space: nowrap;
+        }
+        .scard .t {
+          font-size: clamp(20px, 2.4vw, 30px);
+          font-weight: 700;
+          letter-spacing: -0.01em;
+          margin-bottom: 12px;
+        }
+        .scard .d {
+          color: rgba(238, 242, 246, 0.75);
           font-size: 15.5px;
           line-height: 1.65;
-          max-width: 640px;
         }
-        @media (max-width: 620px) {
-          .tl .row {
+        @media (max-width: 760px) {
+          .scard {
             grid-template-columns: 1fr;
-            gap: 8px;
+            align-content: end;
+            gap: 14px;
           }
-          .tl-dot {
-            top: 34px;
+          .scard .yr {
+            font-size: clamp(56px, 18vw, 96px);
           }
         }
       `}</style>
+    </div>
+  );
+}
+
+const palettes = [
+  "linear-gradient(150deg, #10374d, #0d1a24)",
+  "linear-gradient(150deg, #14304a, #101722)",
+  "linear-gradient(150deg, #5a4314, #1d1608)",
+  "linear-gradient(150deg, #0e3d48, #0b1a1f)",
+  "linear-gradient(150deg, #1b2d4f, #0e1424)",
+  "linear-gradient(150deg, #0d4058, #0a1820)",
+  "linear-gradient(150deg, #22314a, #0f141e)",
+];
+
+function Card({
+  i,
+  m,
+  progress,
+}: {
+  i: number;
+  m: (typeof items)[number];
+  progress: MotionValue<number>;
+}) {
+  const n = items.length;
+  const founding = m.year === String(event.foundedYear);
+  // shrink once the following cards start covering this one
+  const scale = useTransform(progress, [i / n, 1], [1, 1 - (n - i) * 0.035]);
+  const dim = useTransform(progress, [i / n, (i + 1) / n], [1, 0.55]);
+
+  return (
+    <div className="scard-wrap" style={{ top: `calc(12vh + ${i * 14}px)` }}>
+      <motion.article
+        className="scard"
+        style={{ scale, filter: useTransform(dim, (d) => `brightness(${d})`), backgroundColor: "#0d1115" }}
+      >
+        <div style={{ position: "absolute", inset: 0, background: palettes[i % palettes.length], zIndex: -1 }} />
+        <span className="idx">
+          {String(i + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}
+        </span>
+        {founding && <span className="tag">Албаны үүсэл</span>}
+        <div className="yr" style={{ color: founding ? "var(--gold-bright)" : "#fff" }}>
+          {m.year}
+        </div>
+        <div>
+          <h3 className="t">{m.title.replace(" ★", "")}</h3>
+          <p className="d">{m.text}</p>
+        </div>
+      </motion.article>
     </div>
   );
 }

@@ -1,107 +1,129 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useAnimationFrame, useMotionValue, useScroll, useTransform } from "framer-motion";
 import { photos } from "@/data/team";
 
 /**
- * Horizontal photo strip: drifts sideways as the page scrolls, can also be
- * swiped / scrolled directly. Photos zoom slightly on hover.
+ * 3D curved carousel (yaas-energy pattern): photos sit on a cylinder that
+ * turns slowly on its own, faster with scroll, and can be dragged.
  */
 export default function TeamGallery() {
   const ref = useRef<HTMLDivElement>(null);
+  const [radius, setRadius] = useState(640);
+  const spin = useMotionValue(0);
+  const drag = useRef<{ x: number; base: number } | null>(null);
+
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const x = useTransform(scrollYProgress, [0, 1], ["10%", "-18%"]);
+  const scrollTurn = useTransform(scrollYProgress, [0, 1], [40, -80]);
+  const rotateY = useTransform([spin, scrollTurn] as const, ([a, b]: number[]) => a + b);
+
+  useEffect(() => {
+    const set = () => setRadius(innerWidth < 640 ? 300 : innerWidth < 1000 ? 460 : 640);
+    set();
+    addEventListener("resize", set);
+    return () => removeEventListener("resize", set);
+  }, []);
+
+  useAnimationFrame((_, dt) => {
+    if (!drag.current) spin.set(spin.get() - dt * 0.004);
+  });
+
+  const n = photos.length;
+  const step = 360 / n;
 
   return (
-    <div className="team" ref={ref}>
-      <motion.div className="team-strip" style={{ x }}>
+    <div
+      className="ring-stage"
+      ref={ref}
+      onPointerDown={(e) => {
+        drag.current = { x: e.clientX, base: spin.get() };
+        (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+      }}
+      onPointerMove={(e) => {
+        if (drag.current) spin.set(drag.current.base + (e.clientX - drag.current.x) * 0.2);
+      }}
+      onPointerUp={() => (drag.current = null)}
+      onPointerCancel={() => (drag.current = null)}
+    >
+      <motion.div className="ring" style={{ rotateY }}>
         {photos.map((p, i) => (
-          <motion.figure
+          <figure
             key={p.src}
-            className={i === 0 ? "wide" : undefined}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-5% 0px" }}
-            transition={{ duration: 0.8, delay: (i % 4) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="ring-card"
+            style={{ transform: `rotateY(${i * step}deg) translateZ(${radius}px)` }}
           >
             <div className="imgw">
-              <Image
-                src={p.src}
-                alt={p.caption}
-                fill
-                sizes="(max-width: 640px) 80vw, 560px"
-                style={{ objectFit: "cover" }}
-              />
+              <Image src={p.src} alt={p.caption} fill sizes="420px" style={{ objectFit: "cover" }} draggable={false} />
             </div>
             <figcaption>
-              <span className="num">{String(i + 1).padStart(2, "0")}</span>
-              {p.caption}
+              <span>{String(i + 1).padStart(2, "0")}</span> {p.caption}
             </figcaption>
-          </motion.figure>
+          </figure>
         ))}
       </motion.div>
+      <p className="ring-hint">[ ЧИРЖ ЭРГҮҮЛНЭ ҮҮ ]</p>
 
       <style jsx global>{`
-        .team {
-          margin-top: 8px;
-          overflow-x: auto;
-          overflow-y: hidden;
-          scrollbar-width: none;
-          -webkit-overflow-scrolling: touch;
+        .ring-stage {
+          position: relative;
+          height: clamp(380px, 52vw, 620px);
+          perspective: 1800px;
+          perspective-origin: 50% 40%;
+          overflow: hidden;
+          cursor: grab;
+          touch-action: pan-y;
+          user-select: none;
+          margin-top: 10px;
         }
-        .team::-webkit-scrollbar {
-          display: none;
+        .ring-stage:active {
+          cursor: grabbing;
         }
-        .team-strip {
-          display: flex;
-          gap: 20px;
-          width: max-content;
-          padding: 0 32px;
+        .ring {
+          position: absolute;
+          left: 50%;
+          top: 46%;
+          width: 0;
+          height: 0;
+          transform-style: preserve-3d;
         }
-        .team figure {
+        .ring-card {
+          position: absolute;
           margin: 0;
-          width: clamp(240px, 32vw, 420px);
-          flex-shrink: 0;
+          width: clamp(200px, 26vw, 360px);
+          left: calc(clamp(200px, 26vw, 360px) / -2);
+          top: calc(clamp(150px, 19vw, 260px) / -2);
+          backface-visibility: hidden;
         }
-        .team figure.wide {
-          width: clamp(300px, 52vw, 720px);
-        }
-        .team .imgw {
+        .ring-card .imgw {
           position: relative;
           width: 100%;
-          height: clamp(220px, 30vw, 420px);
-          border-radius: 12px;
+          height: clamp(150px, 19vw, 260px);
+          border-radius: 18px;
           overflow: hidden;
           background: var(--paper-2);
+          box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
         }
-        .team .imgw img {
-          transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
-          filter: saturate(0.85);
+        .ring-card figcaption {
+          margin-top: 10px;
+          font-size: 13px;
+          color: var(--ink-2);
+          text-align: center;
         }
-        .team figure:hover .imgw img {
-          transform: scale(1.06);
-          filter: saturate(1.05);
-        }
-        .team figcaption {
-          margin-top: 12px;
-          font-size: 14px;
-          color: var(--ink-3);
-          display: flex;
-          gap: 12px;
-        }
-        .team figcaption .num {
+        .ring-card figcaption span {
+          font-family: var(--font-mono);
           color: var(--cyan);
         }
-        @media (max-width: 640px) {
-          .team-strip {
-            padding: 0 22px;
-          }
-          .team figure,
-          .team figure.wide {
-            width: 78vw;
-          }
+        .ring-hint {
+          position: absolute;
+          bottom: 8px;
+          width: 100%;
+          text-align: center;
+          font-family: var(--font-mono);
+          font-size: 11.5px;
+          letter-spacing: 0.1em;
+          color: var(--ink-3);
         }
       `}</style>
     </div>

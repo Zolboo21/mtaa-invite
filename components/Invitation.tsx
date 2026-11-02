@@ -6,6 +6,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import RsvpForm from "./RsvpForm";
 import Timeline from "./Timeline";
 import TeamGallery from "./TeamGallery";
+import ScrubStory from "./ScrubStory";
+import { Cursor, Label, Scramble, ScrollRuler, SmoothScroll } from "./fx";
 import { Counter, Marquee, Reveal, SplitText, VideoBg, ease } from "./motion";
 import { event } from "@/data/event";
 import { stats } from "@/data/team";
@@ -19,6 +21,15 @@ type Guest = {
 };
 
 type Existing = { status: "yes" | "no"; message?: string } | null;
+
+const sections = [
+  { id: "top", label: "Урилга" },
+  { id: "story", label: "Түүх" },
+  { id: "detail", label: "Үдэшлэг" },
+  { id: "rsvp", label: "Хариу" },
+  { id: "history", label: "Замнал" },
+  { id: "team", label: "Хамт олон" },
+];
 
 const ticker = [
   `${event.deptShort}`,
@@ -48,6 +59,7 @@ export default function Invitation({
   const heroY = useTransform(heroP, [0, 1], ["0%", "-18%"]);
   const heroFade = useTransform(heroP, [0, 0.7], [1, 0]);
   const heroZoom = useTransform(heroP, [0, 1], [1, 1.15]);
+  const giantY = useTransform(heroP, [0, 1], ["0%", "40%"]);
 
   // film band: framed video grows to full bleed while scrolling through
   const filmRef = useRef<HTMLElement>(null);
@@ -57,6 +69,10 @@ export default function Invitation({
 
   return (
     <>
+      <SmoothScroll />
+      <Cursor />
+      <ScrollRuler sections={sections} />
+
       {/* ===================== HERO (video stage) ===================== */}
       <section id="top" className="hero" ref={heroRef}>
         <motion.div className="hero-media" style={{ scale: heroZoom }}>
@@ -64,23 +80,22 @@ export default function Invitation({
         </motion.div>
         <div className="hero-shade" />
 
-        <motion.div className="wrap hero-in" style={{ y: heroY, opacity: heroFade }}>
-          <motion.div
-            className="years"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
-          >
-            <span className="num yr">{event.foundedYear}</span>
-            <motion.span
-              className="yr-line"
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1.3, ease, delay: 0.5 }}
-            />
-            <span className="num yr">{event.anniversaryYear}</span>
-          </motion.div>
+        <div className="hero-meta wrap-wide">
+          <div>
+            <span>[ Огноо ]</span>
+            <Scramble text="2026.12.04 · 18:00" />
+          </div>
+          <div>
+            <span>[ Байршил ]</span>
+            <Scramble text={event.venue} />
+          </div>
+          <div>
+            <span>[ Он ]</span>
+            <Scramble text={`${event.foundedYear} — ${event.anniversaryYear}`} />
+          </div>
+        </div>
 
+        <motion.div className="wrap hero-in" style={{ y: heroY, opacity: heroFade }}>
           <motion.div
             className="anniv"
             initial={{ opacity: 0, scale: 0.85, filter: "blur(12px)" }}
@@ -93,13 +108,9 @@ export default function Invitation({
               width={1068}
               height={989}
               priority
-              sizes="(max-width: 640px) 50vw, 240px"
+              sizes="(max-width: 640px) 40vw, 200px"
             />
           </motion.div>
-
-          <h1 className="hero-title">
-            <SplitText text={event.heroTitle} delay={0.7} stagger={0.045} />
-          </h1>
 
           <motion.p
             className="dept"
@@ -138,8 +149,12 @@ export default function Invitation({
           </motion.div>
         </motion.div>
 
+        <motion.h1 className="hero-giant" style={{ y: giantY }} aria-label={event.heroTitle}>
+          <SplitText text="20 ЖИЛ" delay={0.5} stagger={0.07} />
+        </motion.h1>
+
         <motion.a
-          href="#detail"
+          href="#story"
           className="scroll-cue"
           aria-label="Доош гүйлгэх"
           initial={{ opacity: 0 }}
@@ -166,9 +181,12 @@ export default function Invitation({
         </div>
       </section>
 
+      <ScrubStory />
+
       {/* ===================== DETAIL ===================== */}
       <section id="detail" className="band">
         <div className="wrap">
+          <Label n="01">ҮДЭШЛЭГ</Label>
           <h2 className="h2">
             <SplitText text="Үдэшлэгийн товч" inView stagger={0.025} />
           </h2>
@@ -218,8 +236,9 @@ export default function Invitation({
       </section>
 
       {/* ===================== RSVP ===================== */}
-      <section id="rsvp" className="band alt">
+      <section id="rsvp" className="band seam">
         <div className="wrap wrap-narrow">
+          <Label n="02">ХАРИУ</Label>
           <h2 className="h2">
             <SplitText text="Хүрэлцэн ирэх эсэх" inView stagger={0.025} />
           </h2>
@@ -233,6 +252,7 @@ export default function Invitation({
       {/* ===================== HISTORY ===================== */}
       <section id="history" className="band">
         <div className="wrap">
+          <Label n="03">ЗАМНАЛ</Label>
           <h2 className="h2">
             <SplitText text="Хорь жилийн замнал" inView stagger={0.025} />
           </h2>
@@ -241,9 +261,6 @@ export default function Invitation({
               1987 онд тавигдсан суурь өнөөдөр Улаанбаатар хотын усан хангамжийг
               бүрэн дижитал удирдлагатай болгосон. Гол тэмдэглэлт жилүүд:
             </p>
-          </Reveal>
-          <Reveal className="reel">
-            <VideoBg name="milestones" />
           </Reveal>
           <Timeline />
           <p className="more">
@@ -264,6 +281,7 @@ export default function Invitation({
       {/* ===================== TEAM ===================== */}
       <section id="team" className="band alt">
         <div className="wrap">
+          <Label n="04">ХАМТ ОЛОН</Label>
           <h2 className="h2">
             <SplitText text="Хамт олон" inView stagger={0.03} />
           </h2>
@@ -280,6 +298,9 @@ export default function Invitation({
 
       {/* ===================== FOOTER ===================== */}
       <footer className="foot">
+        <div className="foot-giant" aria-hidden>
+          <SplitText text={event.deptShort} inView stagger={0.08} />
+        </div>
         <div className="wrap foot-in">
           <div>
             <div className="num foot20">{event.years}</div>
