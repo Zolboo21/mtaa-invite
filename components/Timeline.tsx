@@ -140,7 +140,6 @@ export default function Timeline() {
 const photos: Record<string, string> = {
   "1987": "/images/mtaa/building-old.png",
   "2005": "/images/mtaa/scada-tasgan.png",
-  "2014": "/images/mtaa/scada-gachuurt.png",
   "2018–2019": "/images/mtaa/building-new.png",
 };
 
