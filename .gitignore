@@ -20,3 +20,5 @@ invite-links.csv
 /remotion/node_modules
 /remotion/out
 /inspiration
+
+.env*
