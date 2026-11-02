@@ -1,4 +1,5 @@
-import { guests } from "@/data/guests";
+import { getAllGuests } from "@/lib/guests";
+import AdminGuests from "@/components/AdminGuests";
 import { listRsvps, storageMode } from "@/lib/store";
 import { event } from "@/data/event";
 
@@ -31,11 +32,12 @@ export default async function AdminPage({
     );
   }
 
+  const guests = await getAllGuests();
   const rows = await listRsvps();
   const bySlug = new Map(rows.map((r) => [r.slug, r]));
   const yes = rows.filter((r) => r.status === "yes").length;
   const no = rows.filter((r) => r.status === "no").length;
-  const pending = guests.length - rows.length;
+  const pending = guests.filter((g) => !bySlug.has(g.slug)).length;
 
   return (
     <main style={page}>
@@ -56,45 +58,12 @@ export default async function AdminPage({
           <Stat v={pending} l="Хариулаагүй" c={C.ink3} />
         </div>
 
-        <div style={{ overflowX: "auto", border: `1px solid ${C.line}`, borderRadius: 10 }}>
-          <table style={table}>
-            <thead>
-              <tr>
-                {["Нэр", "Линк", "Төлөв", "Мессеж", "Хугацаа"].map((h) => (
-                  <th key={h} style={th}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {guests.map((g) => {
-                const r = bySlug.get(g.slug);
-                const color = r?.status === "yes" ? C.accent : r?.status === "no" ? "#b4432f" : C.ink3;
-                const label = r?.status === "yes" ? "Ирнэ" : r?.status === "no" ? "Ирэхгүй" : "Хүлээгдэж буй";
-                return (
-                  <tr key={g.slug} style={{ borderTop: `1px solid ${C.line2}` }}>
-                    <td style={td}>
-                      <div style={{ fontWeight: 600 }}>{g.name}</div>
-                      {g.title ? <div style={{ fontSize: 12.5, color: C.ink3 }}>{g.title}</div> : null}
-                    </td>
-                    <td style={td}>
-                      <a href={`/${g.slug}`} style={{ color: C.accent }}>/{g.slug}</a>
-                    </td>
-                    <td style={{ ...td, color, fontWeight: 600 }}>{label}</td>
-                    <td style={{ ...td, maxWidth: 260, color: C.ink2, fontSize: 14 }}>{r?.message || "—"}</td>
-                    <td style={{ ...td, color: C.ink3, fontSize: 13 }}>
-                      {r ? new Date(r.updatedAt).toLocaleString("mn-MN") : "—"}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        <p style={{ color: C.ink3, fontSize: 13.5, marginTop: 22, lineHeight: 1.7 }}>
-          Шинэ зочин нэмэхдээ <code style={code}>data/guests.json</code>, бүх линкийг
-          гаргахдаа <code style={code}>npm run links</code> ашиглана.
-        </p>
+        <AdminGuests
+          guests={guests}
+          rsvps={rows.map((r) => ({ slug: r.slug, status: r.status, message: r.message, updatedAt: r.updatedAt }))}
+          adminKey={adminKey ? sp.key : undefined}
+          defaultNote={event.invitationText}
+        />
       </div>
     </main>
   );

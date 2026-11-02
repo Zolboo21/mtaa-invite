@@ -124,11 +124,15 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
           margin-bottom: 10px;
         }
         .beat-line {
-          font-size: var(--fs-lead);
-          line-height: 1.6;
-          color: var(--ink-2);
-          max-width: 520px;
-          margin-top: 18px;
+          font-family: var(--font-hand), var(--font-sans);
+          font-weight: 500;
+          font-size: clamp(25px, 2.3vw, 33px);
+          line-height: 1.32;
+          color: #f3ead2;
+          max-width: 560px;
+          margin-top: 22px;
+          white-space: pre-line;
+          overflow-wrap: break-word;
         }
         .beat-cta {
           display: flex;

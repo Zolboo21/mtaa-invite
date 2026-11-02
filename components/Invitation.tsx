@@ -58,9 +58,7 @@ export default function Invitation({
   guest: Guest;
   initial: Existing;
 }) {
-  const invitationLine =
-    guest.note ||
-    `${event.org}-ын ${event.dept} үүсэн байгуулагдсаны ${event.years} жилийн ойн хүндэтгэлийн үдэшлэгт Таныг хүрэлцэн ирэхийг урьж байна.`;
+  const invitationLine = guest.note || event.invitationText;
 
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress: heroP } = useScroll({ target: heroRef, offset: ["start start", "end start"] });

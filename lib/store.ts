@@ -118,3 +118,69 @@ export async function listRsvps(): Promise<Rsvp[]> {
     b.updatedAt.localeCompare(a.updatedAt)
   );
 }
+
+// ============================================================
+//  ЗОЧДЫН ЖАГСААЛТ (админаас нэмсэн / засварласан)
+//  data/guests.json дээр давхарлана: ижил slug бол дарж бичнэ,
+//  deleted=true бол JSON-оос ирсэн зочныг нууна.
+// ============================================================
+
+export type StoredGuest = {
+  slug: string;
+  name: string;
+  title?: string;
+  note?: string;
+  vip?: boolean;
+  deleted?: boolean;
+  createdAt: string;
+};
+
+const GUEST_HASH = "mtaa:guests";
+const GUEST_FILE = path.join(DATA_DIR, "guests.json");
+
+async function readGuestFile(): Promise<Record<string, StoredGuest>> {
+  try {
+    return JSON.parse(await fs.readFile(GUEST_FILE, "utf8")) as Record<string, StoredGuest>;
+  } catch {
+    return {};
+  }
+}
+
+export async function listStoredGuests(): Promise<StoredGuest[]> {
+  if (useRedis) {
+    const flat = (await redisCmd(["HGETALL", GUEST_HASH])) as string[] | null;
+    const out: StoredGuest[] = [];
+    if (Array.isArray(flat))
+      for (let i = 0; i < flat.length; i += 2) {
+        try {
+          out.push(JSON.parse(flat[i + 1]) as StoredGuest);
+        } catch {
+          /* skip */
+        }
+      }
+    return out;
+  }
+  return Object.values(await readGuestFile());
+}
+
+export async function putStoredGuest(g: StoredGuest): Promise<void> {
+  if (useRedis) {
+    await redisCmd(["HSET", GUEST_HASH, g.slug, JSON.stringify(g)]);
+    return;
+  }
+  const all = await readGuestFile();
+  all[g.slug] = g;
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(GUEST_FILE, JSON.stringify(all, null, 2), "utf8");
+}
+
+export async function removeStoredGuest(slug: string): Promise<void> {
+  if (useRedis) {
+    await redisCmd(["HDEL", GUEST_HASH, slug]);
+    return;
+  }
+  const all = await readGuestFile();
+  delete all[slug];
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(GUEST_FILE, JSON.stringify(all, null, 2), "utf8");
+}

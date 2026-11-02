@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Inter_Tight, JetBrains_Mono } from "next/font/google";
+import { Montserrat, Inter_Tight, JetBrains_Mono, Caveat } from "next/font/google";
 import { event } from "@/data/event";
 import "./globals.css";
 
@@ -15,6 +15,14 @@ const display = Inter_Tight({
   subsets: ["latin", "cyrillic", "cyrillic-ext"],
   weight: ["600", "700", "800"],
   variable: "--font-display",
+  display: "swap",
+});
+
+// Гар бичмэл мэт урилгын мөр — Ө, Ү (cyrillic-ext) бүрэн дэмждэг
+const hand = Caveat({
+  subsets: ["latin", "cyrillic", "cyrillic-ext"],
+  weight: ["500", "600"],
+  variable: "--font-hand",
   display: "swap",
 });
 
@@ -38,7 +46,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="mn">
-      <body className={`${montserrat.variable} ${display.variable} ${mono.variable}`}>{children}</body>
+      <body className={`${montserrat.variable} ${display.variable} ${mono.variable} ${hand.variable}`}>{children}</body>
     </html>
   );
 }

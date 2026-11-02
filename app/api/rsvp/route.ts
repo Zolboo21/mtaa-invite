@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { findGuest } from "@/data/guests";
+import { getGuest } from "@/lib/guests";
 import { saveRsvp, listRsvps } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     companions = Math.max(0, Math.min(9, Math.floor(companions)));
     const message = String(body.message || "").slice(0, 400);
 
-    const guest = findGuest(slug);
+    const guest = await getGuest(slug);
     if (!guest) {
       return NextResponse.json(
         { error: "Урилга олдсонгүй." },

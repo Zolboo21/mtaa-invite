@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { findGuest } from '@/data/guests';
+import { getGuest } from '@/lib/guests';
 import { getRsvp } from '@/lib/store';
 import GuestInviteClient from "@/components/GuestInviteClient";
 
@@ -12,7 +12,7 @@ export default async function GuestInvitePage({
 }) {
     const { slug } = await params;
 
-    const guest = findGuest(slug);
+    const guest = await getGuest(slug);
     if (!guest) notFound();
 
     const existing = await getRsvp(guest.slug);
