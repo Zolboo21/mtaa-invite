@@ -58,6 +58,7 @@ export default function Timeline() {
           background-size: 48px 48px;
         }
         .scard .idx {
+          z-index: 2;
           position: absolute;
           top: clamp(22px, 3vw, 36px);
           left: clamp(26px, 4vw, 52px);
@@ -67,6 +68,7 @@ export default function Timeline() {
           color: rgba(238, 242, 246, 0.55);
         }
         .scard .tag {
+          z-index: 2;
           position: absolute;
           top: clamp(18px, 3vw, 32px);
           right: clamp(22px, 4vw, 48px);
@@ -140,6 +142,7 @@ export default function Timeline() {
 const photos: Record<string, string> = {
   "1987": "/images/mtaa/building-old.png",
   "2005": "/images/mtaa/scada-tasgan.png",
+  "2006": "/images/mtaa/control-center-team.png",
   "2018–2019": "/images/mtaa/building-new.png",
 };
 
