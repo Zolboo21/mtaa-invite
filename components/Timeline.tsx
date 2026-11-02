@@ -108,6 +108,20 @@ export default function Timeline() {
           mask-image: linear-gradient(90deg, transparent, #000 45%);
           -webkit-mask-image: linear-gradient(90deg, transparent, #000 45%);
         }
+        .scard-img.full {
+          left: 0;
+          width: 100%;
+          opacity: 1;
+          mask-image: none;
+          -webkit-mask-image: none;
+        }
+        .scard-img.full::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, rgba(29, 22, 8, 0.92) 0%, rgba(29, 22, 8, 0.55) 45%, rgba(29, 22, 8, 0.82) 100%),
+            linear-gradient(0deg, rgba(29, 22, 8, 0.9), transparent 55%);
+        }
         .scard > div:last-child {
           position: relative;
           z-index: 1;
@@ -197,13 +211,13 @@ function Card({
         {founding && <span className="tag">Албаны үүсэл</span>}
         {photos[m.year] ? (
           <motion.div
-            className="scard-img"
+            className={`scard-img ${m.year === "2006" ? "full" : ""}`}
             initial={{ clipPath: "inset(0 0 0 100%)" }}
             whileInView={{ clipPath: "inset(0 0 0 0%)" }}
             viewport={{ once: true, margin: "-20% 0px" }}
             transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Image src={photos[m.year]} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" style={{ objectFit: "cover" }} />
+            <Image src={photos[m.year]} alt="" fill sizes="(max-width: 760px) 100vw, 1100px" style={{ objectFit: "cover", objectPosition: m.year === "2006" ? "50% 72%" : "50% 50%" }} />
           </motion.div>
         ) : null}
         <div className="yr" style={{ color: founding ? "var(--gold-bright)" : "#fff" }}>
