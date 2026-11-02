@@ -46,6 +46,8 @@ const items = [
     stat: "81",
     statL: "GPRS цэг",
     color: "#06b6d4",
+    img: "/images/mtaa/server-room.png",
+    pos: "30% 40%",
   },
   {
     n: "05",
