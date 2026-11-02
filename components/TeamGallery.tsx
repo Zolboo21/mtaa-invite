@@ -26,6 +26,8 @@ const slots = [
   [-0.08, -0.14],
   [0.2, 0.1],
   [-0.25, 0.02],
+  [0.22, -0.04],
+  [-0.18, 0.1],
 ];
 
 export default function TeamGallery() {

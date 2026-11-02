@@ -75,6 +75,7 @@ function MusicButton() {
 const links = [
   ["#story", "Түүх"],
   ["#detail", "Үдэшлэг"],
+  ["#work", "Ажил"],
   ["#history", "Замнал"],
   ["#team", "Хамт олон"],
 ];

@@ -10,6 +10,8 @@ import ScrubStory from "./ScrubStory";
 import WaterHero from "./WaterHero";
 import GuestBeat from "./GuestBeat";
 import EventDetails from "./EventDetails";
+import Directions from "./Directions";
+import YearRibbon from "./YearRibbon";
 import { Grain, Nav } from "./chrome";
 import { Cursor, Label, Scramble, ScrollRuler, SmoothScroll } from "./fx";
 import { Marquee, Reveal, SplitText, ease } from "./motion";
@@ -30,6 +32,7 @@ const sections = [
   { id: "invite", label: "Урилга" },
   { id: "story", label: "Түүх" },
   { id: "detail", label: "Үдэшлэг" },
+  { id: "work", label: "Ажил" },
   { id: "history", label: "Замнал" },
   { id: "team", label: "Хамт олон" },
   { id: "rsvp", label: "Хариу" },
@@ -87,7 +90,9 @@ export default function Invitation({
             animate={{ opacity: 1 }}
             transition={{ duration: 1.2, delay: 1.3 }}
           >
-            {event.dept}
+            <span className="wordmark">
+              Мэдээллийн технологи, <span className="g1">автоматжуулалтын</span> <span className="g2">алба</span>
+            </span>
           </motion.p>
         </motion.div>
 
@@ -120,6 +125,8 @@ export default function Invitation({
 
       <EventDetails />
 
+      <Directions />
+
       {/* ===================== HISTORY ===================== */}
       <section id="history" className="band">
         <div className="wrap-xl">
@@ -134,6 +141,7 @@ export default function Invitation({
             </p>
           </Reveal>
           <Timeline />
+          <YearRibbon />
           <p className="more">
             <a className="link-underline" href="https://mtaa.vercel.app" target="_blank" rel="noreferrer">
               Бүрэн түүхэн замналыг үзэх →
@@ -203,7 +211,7 @@ export default function Invitation({
                 <Image src="/images/logos/usug.webp" alt="Ус Сувгийн Удирдах Газар" width={40} height={40} />
               </span>
               <span className="logo-chip">
-                <Image src="/images/logos/mtaa.jpg" alt="МТАА" width={40} height={40} />
+                <Image src="/images/mtaa/mtan.png" alt="МТАН" width={40} height={40} />
               </span>
             </div>
             <p className="foot-fine">Энэ урилга {guest.name}-д зориулагдав.</p>

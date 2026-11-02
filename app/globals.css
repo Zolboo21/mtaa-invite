@@ -7,9 +7,12 @@
   --ink-3: #6f8191;
 
   /* ---- Brand accents ---- */
-  --blue: #1ea7e6;       /* brand blue (bright for dark bg) */
-  --blue-deep: #1488c4;
-  --cyan: #46c6f2;       /* droplet highlight */
+  --blue: #6094ea;       /* brand blue (main MTAA site) */
+  --sky: #38bdf8;
+  --green: #4caf50;
+  --green-2: #7ed56f;
+  --blue-deep: #378add;
+  --cyan: #38bdf8;       /* droplet highlight */
   --accent: var(--blue);
   --gold: #e9c25f;
   --gold-bright: #f6dd8f;
@@ -281,3 +284,8 @@ html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .grain, .mq-track { animation: none !important; }
 }
+
+/* main-site wordmark: gradient words */
+.wordmark { font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.wordmark .g1 { background: linear-gradient(90deg, #4caf50, #7ed56f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wordmark .g2 { background: linear-gradient(90deg, #6094ea, #38bdf8); -webkit-background-clip: text; background-clip: text; color: transparent; }

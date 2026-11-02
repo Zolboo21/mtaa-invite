@@ -99,7 +99,7 @@ export default function WaterHero() {
       const c = document.createElement("canvas");
       c.width = cw; c.height = ch;
       const g = c.getContext("2d")!;
-      const size = Math.min(cw * (cw < ch ? 0.82 : 0.5), ch * 0.64);
+      const size = Math.min(cw * (cw < ch ? 0.7 : 0.5), ch * 0.64);
       g.fillStyle = "#fff";
       g.textAlign = "center";
       g.textBaseline = "middle";
