@@ -141,7 +141,7 @@ html { scroll-behavior: smooth; }
 
 /* ---- motion primitives (components/motion.tsx) ---- */
 .split { display: inline-flex; flex-wrap: wrap; justify-content: inherit; column-gap: 0.28em; }
-.split-w { display: inline-flex; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.split-w { display: inline-flex; overflow: hidden; padding: 0.12em 0.08em 0.2em 0.02em; margin: -0.12em -0.08em -0.2em -0.02em; }
 .split-c { display: inline-block; transform-origin: 0 100%; will-change: transform; }
 
 .vbg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
@@ -218,7 +218,7 @@ html { scroll-behavior: smooth; }
 }
 .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 14px; letter-spacing: 0.04em; }
 .nav-logo img { width: 34px; height: auto; }
-.nav-logo em { font-family: var(--font-serif); font-weight: 400; color: var(--gold-bright); font-size: 17px; }
+.nav-logo em { font-family: var(--font-display); font-weight: 700; font-weight: 400; color: var(--gold-bright); font-size: 17px; }
 .nav-links { display: flex; gap: 4px; }
 .nav-links a {
   font-size: 13.5px; padding: 8px 14px; border-radius: 999px; color: var(--ink-2);

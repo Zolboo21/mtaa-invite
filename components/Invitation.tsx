@@ -12,6 +12,8 @@ import GuestBeat from "./GuestBeat";
 import EventDetails from "./EventDetails";
 import Directions from "./Directions";
 import YearRibbon from "./YearRibbon";
+import TeamHero from "./TeamHero";
+import ScrollHint from "./ScrollHint";
 import { Grain, Nav } from "./chrome";
 import { Cursor, Label, Scramble, ScrollRuler, SmoothScroll } from "./fx";
 import { Marquee, Reveal, SplitText, ease } from "./motion";
@@ -96,6 +98,8 @@ export default function Invitation({
           </motion.p>
         </motion.div>
 
+        <ScrollHint target="#invite" />
+
         <motion.div
           className="hero-foot"
           initial={{ opacity: 0, y: 20 }}
@@ -107,9 +111,7 @@ export default function Invitation({
             <span className="hf-k">[ Он ]</span>
             <Scramble text={`${event.foundedYear} — ${event.anniversaryYear}`} />
           </div>
-          <a href="#invite" className="scroll-cue" aria-label="Доош гүйлгэх">
-            <span />
-          </a>
+          <span />
           <div className="hf-r">
             <span className="hf-k">[ Үдэшлэг ]</span>
             <Scramble text={`2026.12.04 · ${event.venue}`} />
@@ -165,6 +167,7 @@ export default function Invitation({
             </p>
           </Reveal>
         </div>
+        <TeamHero />
         <TeamGallery />
       </section>
 
@@ -245,7 +248,7 @@ export default function Invitation({
           position: absolute;
           left: 0;
           right: 0;
-          top: 75%;
+          top: 65%;
           text-align: center;
           pointer-events: none;
         }
@@ -320,7 +323,7 @@ export default function Invitation({
         }
         @media (max-width: 640px) {
           .hero-copy {
-            top: 66%;
+            top: 56%;
           }
           .hero-foot {
             font-size: 10.5px;

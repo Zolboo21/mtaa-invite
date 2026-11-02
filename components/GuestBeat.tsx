@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Player, type PlayerRef } from "@remotion/player";
 import { motion, useInView } from "framer-motion";
 import { GuestFilm, GUEST_FILM } from "./film/GuestFilm";
@@ -11,7 +11,7 @@ import { event } from "@/data/event";
 
 type Guest = { slug: string; name: string; title?: string; note?: string; vip?: boolean };
 
-/** Personal beat right after the hero: the guest's name, big, plus their own Remotion film. */
+/** Personal beat right after the hero: the guest's name (shown once, here) plus the anniversary film. */
 export default function GuestBeat({ guest, line }: { guest: Guest; line: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const player = useRef<PlayerRef>(null);
@@ -22,10 +22,10 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
       <div className="beat-grid">
         <div className="beat-copy">
           <Label n="00">ХУВИЙН УРИЛГА</Label>
-          <p className="beat-hi">{guest.vip ? "Эрхэм хүндэт" : "Хүндэт"}</p>
-          <h2 className="beat-name">
-            <SplitText text={guest.name} inView stagger={0.05} />
-          </h2>
+          {/^(эрхэм|хүндэт)/i.test(guest.name) ? null : (
+            <p className="beat-hi">{guest.vip ? "Эрхэм хүндэт" : "Хүндэт"}</p>
+          )}
+          <FitName name={guest.name} />
           {guest.title ? <p className="beat-role">{guest.title}</p> : null}
           <motion.p
             className="beat-line"
@@ -62,7 +62,7 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
           <Player
             ref={player}
             component={GuestFilm}
-            inputProps={{ name: guest.name, vip: guest.vip, dateLabel: "2026.12.04 · 18:00" }}
+            inputProps={{ dateLabel: "2026.12.04 · 18:00" }}
             durationInFrames={GUEST_FILM.durationInFrames}
             fps={GUEST_FILM.fps}
             compositionWidth={GUEST_FILM.width}
@@ -72,7 +72,7 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
             loop
             acknowledgeRemotionLicense
           />
-          <span className="beat-film-tag">[ ТАНД ЗОРИУЛСАН КИНО · {event.years} ЖИЛ ]</span>
+          <span className="beat-film-tag">[ {event.years} ЖИЛ · НЭГ БАГ ]</span>
         </motion.div>
       </div>
 
@@ -94,14 +94,14 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
           align-items: center;
         }
         .beat-hi {
-          font-family: var(--font-serif);
-          font-style: italic;
-          font-size: clamp(22px, 2.6vw, 32px);
-          color: var(--ink-2);
+          font-family: var(--font-sans);
+          font-weight: 400;
+          letter-spacing: 0.02em;
+          font-size: clamp(18px, 1.8vw, 24px);
+          color: var(--ink-3);
         }
         .beat-name {
-          font-size: clamp(46px, 7.2vw, 124px);
-          overflow-wrap: anywhere;
+          font-size: var(--fit, 96px);
           font-weight: 800;
           letter-spacing: -0.045em;
           line-height: 0.95;
@@ -161,5 +161,46 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
         }
       `}</style>
     </section>
+  );
+}
+
+/**
+ * The name always fits its column: single-word names scale down to one line,
+ * multi-word names may wrap between words (never inside a word).
+ */
+function FitName({ name }: { name: string }) {
+  const box = useRef<HTMLHeadingElement>(null);
+  const [size, setSize] = useState<number | null>(null);
+
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const fit = () => {
+      const avail = el.clientWidth;
+      const probe = document.createElement("span");
+      probe.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font:800 100px ${getComputedStyle(el).fontFamily};letter-spacing:-0.045em`;
+      document.body.appendChild(probe);
+      // the longest word must fit on one line
+      const widest = Math.max(...name.split(" ").map((w) => ((probe.textContent = w), probe.offsetWidth)));
+      probe.textContent = name;
+      const whole = probe.offsetWidth;
+      probe.remove();
+      const max = Math.min(124, Math.max(46, innerWidth * 0.16));
+      const oneLine = (avail / whole) * 100 * 0.96;
+      const byWord = (avail / widest) * 100 * 0.96;
+      // prefer one line if it stays large; otherwise wrap between words
+      setSize(Math.floor(Math.min(max, oneLine >= max * 0.7 ? oneLine : byWord)));
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    document.fonts?.ready.then(fit);
+    return () => ro.disconnect();
+  }, [name]);
+
+  return (
+    <h2 className="beat-name" ref={box} style={{ ["--fit" as string]: size ? `${size}px` : undefined }}>
+      <SplitText text={name} inView stagger={0.05} />
+    </h2>
   );
 }

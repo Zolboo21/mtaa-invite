@@ -125,8 +125,10 @@ export default function ScrubStory() {
           margin-bottom: clamp(24px, 4vh, 48px);
         }
         .scrub-year {
-          font-family: var(--font-serif);
-          font-style: italic;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
           font-size: clamp(56px, 8vw, 132px);
           line-height: 0.9;
           color: var(--gold-bright);

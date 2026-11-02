@@ -28,7 +28,7 @@ export default function YearRibbon() {
         <motion.ol style={{ x }}>
           {milestones.map((m) => (
             <li key={m.year + m.title} style={{ ["--t" as string]: TRACK[m.track] }}>
-              <span className="yr-y">{m.year}</span>
+              <span className="yr-y">{m.year.replace("–", " – ")}</span>
               <span className="yr-dot" />
               <span className="yr-t">{m.title.replace(" ★", "")}</span>
               <span className="yr-d">{m.text}</span>
@@ -97,8 +97,10 @@ export default function YearRibbon() {
           box-shadow: 0 0 0 4px color-mix(in srgb, var(--t) 20%, transparent);
         }
         .yr-y {
-          font-family: var(--font-serif);
-          font-style: italic;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
           font-size: 30px;
           line-height: 1;
           color: var(--ink);

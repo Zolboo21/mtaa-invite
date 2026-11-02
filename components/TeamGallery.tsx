@@ -53,7 +53,7 @@ export default function TeamGallery() {
 
         <div className="fly-meta">
           <motion.div key={active} initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
-            <span className="fly-n">{String(active + 1).padStart(3, "0")}</span>
+            <span className="fly-n">{String(active + 1).padStart(2, "0")}</span>
             <span className="fly-c">{photos[active].caption}</span>
           </motion.div>
         </div>
@@ -115,8 +115,10 @@ export default function TeamGallery() {
           gap: 18px;
         }
         .fly-n {
-          font-family: var(--font-serif);
-          font-style: italic;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
           font-size: clamp(56px, 8vw, 110px);
           line-height: 0.9;
           color: var(--gold-bright);

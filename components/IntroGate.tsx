@@ -160,8 +160,10 @@ export default function IntroGate({
           filter: drop-shadow(0 18px 50px rgba(0, 0, 0, 0.5));
         }
         .gate-hello {
-          font-family: var(--font-serif);
-          font-style: italic;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
           font-size: 30px;
         }
         .gate-btn {
@@ -195,8 +197,10 @@ export default function IntroGate({
           color: #8193a3;
         }
         .gate-pct {
-          font-family: var(--font-serif);
-          font-style: italic;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
           font-size: 56px;
           line-height: 1;
           color: #f6dd8f;

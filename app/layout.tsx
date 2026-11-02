@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Playfair_Display, JetBrains_Mono } from "next/font/google";
+import { Montserrat, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import { event } from "@/data/event";
 import "./globals.css";
 
@@ -10,12 +10,11 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
-// Editorial italic numerals (он, дугаар)
-const serif = Playfair_Display({
-  subsets: ["latin", "cyrillic"],
-  style: ["italic"],
-  weight: ["400", "700"],
-  variable: "--font-serif",
+// Display face for big numbers and years: lining, tabular figures
+const display = Inter_Tight({
+  subsets: ["latin", "cyrillic", "cyrillic-ext"],
+  weight: ["600", "700", "800"],
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -39,7 +38,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="mn">
-      <body className={`${montserrat.variable} ${serif.variable} ${mono.variable}`}>{children}</body>
+      <body className={`${montserrat.variable} ${display.variable} ${mono.variable}`}>{children}</body>
     </html>
   );
 }

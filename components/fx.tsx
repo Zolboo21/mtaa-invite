@@ -12,13 +12,24 @@ import React, { useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import { motion, useInView, useScroll, useSpring, useTransform } from "framer-motion";
 
+/** The live Lenis instance (null with reduced motion), for programmatic scrolls. */
+export let lenis: Lenis | null = null;
+
+/** Smooth-scroll to a y position or element, through Lenis when it's running. */
+export function scrollToTarget(target: number | string, opts: { duration?: number } = {}) {
+  if (lenis) return lenis.scrollTo(target, { duration: opts.duration ?? 1.6 });
+  const y = typeof target === "number" ? target : (document.querySelector(target)?.getBoundingClientRect().top ?? 0) + scrollY;
+  window.scrollTo({ top: y, behavior: "smooth" });
+}
+
 export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const lenis = new Lenis({ duration: 1.15, anchors: { offset: 0 }, autoRaf: true });
+    lenis = new Lenis({ duration: 1.15, anchors: { offset: 0 }, autoRaf: true });
     document.documentElement.style.scrollBehavior = "auto";
     return () => {
-      lenis.destroy();
+      lenis?.destroy();
+      lenis = null;
       document.documentElement.style.scrollBehavior = "";
     };
   }, []);

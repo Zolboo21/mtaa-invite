@@ -17,6 +17,7 @@ const items = [
     stat: "200+",
     statL: "цэг салбар",
     color: "#7ed56f",
+    img: "/images/mtaa/scada-gachuurt.png",
   },
   {
     n: "02",
@@ -50,15 +51,16 @@ const items = [
     stat: "24/7",
     statL: "хяналт",
     color: "#f6dd8f",
-    img: "/images/mtaa/monitoring.jpg",
+    img: "/images/mtaa/scada-city.png",
   },
   {
     n: "06",
-    title: "Оффис техник, дэмжлэг",
-    text: "1000 гаруй ажилтны компьютер, цаг бүртгэл, техник хангамжийн засвар үйлчилгээ.",
-    stat: "1000+",
-    statL: "хэрэглэгч",
+    title: "Ухаалаг ус түгээх",
+    text: "Картаар ус олгодог 130 гаруй ухаалаг ус түгээх байр, зөөврийн усны 60 гаруй машины хяналт.",
+    stat: "130+",
+    statL: "ус түгээх байр",
     color: "#4caf50",
+    img: "/images/mtaa/water-kiosk.png",
   },
 ];
 
@@ -185,8 +187,10 @@ export default function Directions() {
           color: var(--ink-3);
         }
         .dir-stat b {
-          font-family: var(--font-serif);
-          font-style: italic;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
           font-weight: 400;
           font-size: 30px;
           color: var(--ink);

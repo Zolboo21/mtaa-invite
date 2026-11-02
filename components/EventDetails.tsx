@@ -156,8 +156,10 @@ export default function EventDetails() {
           align-items: flex-end;
           flex-wrap: wrap;
           gap: 0 16px;
-          font-family: var(--font-serif);
-          font-style: italic;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
           line-height: 0.8;
         }
         .ev-dd,
@@ -185,8 +187,10 @@ export default function EventDetails() {
           line-height: 1.4;
         }
         .ev-time {
-          font-family: var(--font-serif);
-          font-style: italic;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
           font-size: 34px;
           color: var(--cyan);
         }
@@ -298,8 +302,10 @@ export default function EventDetails() {
           border-top: 1px solid var(--line-2);
         }
         .ev-pt {
-          font-family: var(--font-serif);
-          font-style: italic;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
           font-size: 26px;
           color: var(--gold-bright);
           min-width: 70px;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { milestones } from "@/data/timeline";
 import { event } from "@/data/event";
@@ -77,12 +78,37 @@ export default function Timeline() {
           padding: 6px 12px;
         }
         .scard .yr {
-          font-family: var(--font-serif);
-          font-style: italic;
-          font-size: clamp(64px, 11vw, 168px);
-          line-height: 0.85;
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-variant-numeric: lining-nums tabular-nums;
+          letter-spacing: -0.03em;
+          font-size: clamp(56px, 8.5vw, 132px);
+          line-height: 0.9;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          z-index: 1;
           letter-spacing: -0.02em;
           white-space: nowrap;
+        }
+        .scard .yr-to {
+          font-size: 0.55em;
+          opacity: 0.75;
+          margin-top: 0.08em;
+        }
+        .scard-img {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 48%;
+          opacity: 0.55;
+          mask-image: linear-gradient(90deg, transparent, #000 45%);
+          -webkit-mask-image: linear-gradient(90deg, transparent, #000 45%);
+        }
+        .scard > div:last-child {
+          position: relative;
+          z-index: 1;
         }
         .scard .t {
           font-size: clamp(20px, 2.4vw, 30px);
@@ -107,6 +133,27 @@ export default function Timeline() {
         }
       `}</style>
     </div>
+  );
+}
+
+// Department photos on their matching milestones (user-provided).
+const photos: Record<string, string> = {
+  "1987": "/images/mtaa/building-old.png",
+  "2005": "/images/mtaa/scada-tasgan.png",
+  "2014": "/images/mtaa/scada-gachuurt.png",
+  "2018–2019": "/images/mtaa/building-new.png",
+};
+
+/** "2008–2009" -> two lines so big years never overflow the card. */
+function Year({ y }: { y: string }) {
+  const [a, b] = y.split("–");
+  return b ? (
+    <>
+      <span>{a}</span>
+      <span className="yr-to">–&thinsp;{b}</span>
+    </>
+  ) : (
+    <span>{y}</span>
   );
 }
 
@@ -146,8 +193,19 @@ function Card({
           {String(i + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}
         </span>
         {founding && <span className="tag">Албаны үүсэл</span>}
+        {photos[m.year] ? (
+          <motion.div
+            className="scard-img"
+            initial={{ clipPath: "inset(0 0 0 100%)" }}
+            whileInView={{ clipPath: "inset(0 0 0 0%)" }}
+            viewport={{ once: true, margin: "-20% 0px" }}
+            transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Image src={photos[m.year]} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" style={{ objectFit: "cover" }} />
+          </motion.div>
+        ) : null}
         <div className="yr" style={{ color: founding ? "var(--gold-bright)" : "#fff" }}>
-          {m.year}
+          <Year y={m.year} />
         </div>
         <div>
           <h3 className="t">{m.title.replace(" ★", "")}</h3>

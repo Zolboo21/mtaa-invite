@@ -20,7 +20,7 @@ export const RemotionRoot: React.FC = () => (
       id="guest-film"
       component={GuestFilm}
       {...GUEST_FILM}
-      defaultProps={{ name: "Б.Одсүрэн", vip: true, dateLabel: "2026.12.04 · 18:00" }}
+      defaultProps={{ dateLabel: "2026.12.04 · 18:00" }}
     />
     <Composition id="milestones" component={Milestones} durationInFrames={milestonesDuration(FPS)} fps={FPS} width={1920} height={1080} />
   </>

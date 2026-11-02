@@ -9,6 +9,7 @@ export type Photo = {
 
 export const photos: Photo[] = [
   { src: "/images/mtaa/alba.jpg", caption: "Мэдээллийн технологи, автоматжуулалтын нэгж" },
+  { src: "/images/mtaa/building-new.png", caption: "УСУГ-ын 60 жилийн ой, шинэ байр" },
   { src: "/images/team/6.jpg", caption: "МТАА — нэгдсэн хамт олон" },
   { src: "/images/team/1.jpg", caption: "Албаны хамт олон" },
   { src: "/images/team/2.jpg", caption: "Хээрийн ажлын өдрүүд" },
@@ -16,7 +17,6 @@ export const photos: Photo[] = [
   { src: "/images/team/4.jpg", caption: "Хамтдаа урагшаа" },
   { src: "/images/team/7.jpg", caption: "Албаны эмэгтэйчүүд" },
   { src: "/images/team/3.jpg", caption: "Нэг багийн хэмнэл" },
-  { src: "/images/mtaa/camera-room.jpg", caption: "Камерын хяналтын өрөө" },
 ];
 
 export const stats: { value: string; label: string }[] = [
