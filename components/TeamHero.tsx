@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-/** Full-bleed reveal of the team at the control centre: the window opens and the photo drifts as you scroll. */
+/** Full-bleed reveal of the whole team: the window opens and the photo drifts as you scroll. */
 export default function TeamHero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -20,16 +20,16 @@ export default function TeamHero() {
       <motion.div className="th-frame" style={{ clipPath }}>
         <motion.div className="th-img" style={{ y }}>
           <Image
-            src="/images/mtaa/control-center-team.png"
-            alt="МТАА-ны хамт олон УСУГ-ын үйл ажиллагааны хяналтын төвд"
+            src="/images/team/6.jpg"
+            alt="МТАА-ны нэгдсэн хамт олон"
             fill
             sizes="100vw"
-            style={{ objectFit: "cover", objectPosition: "50% 45%" }}
+            style={{ objectFit: "cover", objectPosition: "50% 40%" }}
           />
         </motion.div>
         <div className="th-shade" />
         <motion.div className="th-cap" style={{ y: capY, opacity: capO }}>
-          <span>[ УСУГ-ЫН ҮЙЛ АЖИЛЛАГААНЫ ХЯНАЛТЫН ТӨВ ]</span>
+          <span>[ МТАА — НЭГДСЭН ХАМТ ОЛОН ]</span>
           <p>Хорин жил, нэг баг.</p>
         </motion.div>
       </motion.div>
