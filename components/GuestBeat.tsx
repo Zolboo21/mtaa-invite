@@ -72,7 +72,6 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
             loop
             acknowledgeRemotionLicense
           />
-          <span className="beat-film-tag">[ {event.years} ЖИЛ · НЭГ БАГ ]</span>
         </motion.div>
       </div>
 

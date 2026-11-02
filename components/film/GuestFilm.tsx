@@ -24,6 +24,7 @@ export const GUEST_FILM = { fps: 30, durationInFrames: 270, width: 1080, height:
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const ease = Easing.bezier(0.22, 1, 0.36, 1);
 const GOLD = "#f6dd8f";
+const TEAM_PHOTO = "images/team/6.jpg";
 const FONT = "var(--font-sans, Montserrat), Montserrat, system-ui, sans-serif";
 const DISPLAY = "var(--font-display, 'Inter Tight'), 'Inter Tight', Montserrat, system-ui, sans-serif";
 
@@ -41,8 +42,8 @@ export const GuestFilm: React.FC<GuestFilmProps> = ({ dateLabel }) => {
   // beat 2: team photo at the SCADA wall, slow push-in (2.4–6.6s)
   const photoIn = interpolate(frame, [s(2.4), s(3.4)], [0, 1], { ...clamp, easing: ease });
   const photoOut = interpolate(frame, [s(6.2), s(6.9)], [1, 0], clamp);
-  const kb = interpolate(frame, [s(2.4), s(7)], [1.18, 1.02], clamp);
-  const pan = interpolate(frame, [s(2.4), s(7)], [-4, 3], clamp);
+  const kb = interpolate(frame, [s(2.4), s(7)], [1.1, 1.0], clamp);
+  const pan = interpolate(frame, [s(2.4), s(7)], [-2, 2], clamp);
   const cap = interpolate(frame, [s(3.4), s(4.2)], [0, 1], { ...clamp, easing: ease });
 
   // beat 3: 20 жил + date (6.6–9s)
@@ -104,18 +105,24 @@ export const GuestFilm: React.FC<GuestFilmProps> = ({ dateLabel }) => {
       {/* beat 2 */}
       <AbsoluteFill style={{ opacity: photoIn * photoOut }}>
         <AbsoluteFill style={{ overflow: "hidden", clipPath: `inset(${(1 - photoIn) * 20}% 0 ${(1 - photoIn) * 20}% 0)` }}>
+          {/* blurred fill so the wide group photo sits whole inside the tall frame */}
           <Img
-            src={staticFile("images/mtaa/control-center-team.png")}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "50% 40%",
-              scale: String(kb),
-              translate: `${pan}% 0`,
-            }}
+            src={staticFile(TEAM_PHOTO)}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "blur(40px) brightness(0.45)", scale: "1.2" }}
           />
-          <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(7,12,20,0.1) 40%, rgba(7,12,20,0.92))" }} />
+          <AbsoluteFill style={{ justifyContent: "center", paddingBottom: height * 0.12 }}>
+            <Img
+              src={staticFile(TEAM_PHOTO)}
+              style={{
+                width: "100%",
+                objectFit: "contain",
+                scale: String(kb),
+                translate: `${pan}% 0`,
+                boxShadow: "0 40px 90px rgba(0,0,0,0.55)",
+              }}
+            />
+          </AbsoluteFill>
+          <AbsoluteFill style={{ background: "linear-gradient(180deg, transparent 55%, rgba(7,12,20,0.95))" }} />
         </AbsoluteFill>
         <div
           style={{
@@ -128,7 +135,7 @@ export const GuestFilm: React.FC<GuestFilmProps> = ({ dateLabel }) => {
           }}
         >
           <div style={{ fontSize: u * 0.026, letterSpacing: "0.2em", color: "#38bdf8", textTransform: "uppercase" }}>
-            Үйл ажиллагааны хяналтын төв
+            Мэдээллийн технологи, автоматжуулалтын алба
           </div>
           <div style={{ fontSize: u * 0.07, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.05, marginTop: u * 0.015 }}>
             Хорин жил, нэг баг
