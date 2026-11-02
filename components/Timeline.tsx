@@ -108,6 +108,21 @@ export default function Timeline() {
           mask-image: linear-gradient(90deg, transparent, #000 45%);
           -webkit-mask-image: linear-gradient(90deg, transparent, #000 45%);
         }
+        .scard-clip {
+          position: absolute;
+          top: clamp(40px, 6vw, 64px);
+          right: clamp(20px, 4vw, 52px);
+          width: min(44%, 470px);
+          margin: 0;
+          z-index: 1;
+          filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.55));
+        }
+        @media (max-width: 760px) {
+          .scard-clip {
+            width: 78%;
+            top: 48px;
+          }
+        }
         .scard-img.full {
           left: 0;
           width: 100%;
@@ -158,6 +173,14 @@ const photos: Record<string, string> = {
   "2005": "/images/mtaa/scada-tasgan.png",
   "2006": "/images/mtaa/control-center-team.png",
   "2018–2019": "/images/mtaa/building-new.png",
+};
+
+// Newspaper clippings, shown as tilted paper rather than a faded background.
+const clippings: Record<string, { src: string; alt: string }> = {
+  "2008–2009": {
+    src: "/images/mtaa/ubtimes-2009.png",
+    alt: "Улаанбаатар Таймс: «Ус сувгийн станцууд бүрэн автомат боллоо»",
+  },
 };
 
 /** "2008–2009" -> two lines so big years never overflow the card. */
@@ -219,6 +242,17 @@ function Card({
           >
             <Image src={photos[m.year]} alt="" fill sizes="(max-width: 760px) 100vw, 1100px" style={{ objectFit: "cover", objectPosition: m.year === "2006" ? "50% 72%" : "50% 50%" }} />
           </motion.div>
+        ) : null}
+        {clippings[m.year] ? (
+          <motion.figure
+            className="scard-clip"
+            initial={{ opacity: 0, y: 40, rotate: 2 }}
+            whileInView={{ opacity: 1, y: 0, rotate: -2.5 }}
+            viewport={{ once: true, margin: "-20% 0px" }}
+            transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Image src={clippings[m.year].src} alt={clippings[m.year].alt} width={1050} height={580} sizes="(max-width: 760px) 80vw, 460px" style={{ width: "100%", height: "auto", display: "block" }} />
+          </motion.figure>
         ) : null}
         <div className="yr" style={{ color: founding ? "var(--gold-bright)" : "#fff" }}>
           <Year y={m.year} />
