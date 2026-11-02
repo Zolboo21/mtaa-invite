@@ -53,6 +53,13 @@ export default function RsvpForm({
             exit={{ opacity: 0 }}
             className="done"
           >
+            <Burst gold={status === "yes"} />
+            <svg className="done-check" viewBox="0 0 80 80" aria-hidden>
+              <motion.circle cx="40" cy="40" r="36" fill="none" strokeWidth="2"
+                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+              <motion.path d={status === "yes" ? "M25 41 l10 10 l20 -22" : "M28 40 h24"} fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.6, delay: 0.7 }} />
+            </svg>
             <p className="done-title">
               {status === "yes"
                 ? "Таныг хүлээн авлаа — уулзацгаая."
@@ -80,21 +87,25 @@ export default function RsvpForm({
                 data-sel={status === "yes"}
                 onClick={() => setStatus("yes")}
               >
-                Оролцоно
+                <span className="choice-ic">✓</span>
+                <span className="choice-t">Оролцоно</span>
+                <span className="choice-s">Үдэшлэгт хүрэлцэн ирнэ</span>
               </button>
               <button
                 className="choice"
                 data-sel={status === "no"}
                 onClick={() => setStatus("no")}
               >
-                Оролцож чадахгүй
+                <span className="choice-ic">✕</span>
+                <span className="choice-t">Оролцож чадахгүй</span>
+                <span className="choice-s">Энэ удаад боломжгүй</span>
               </button>
             </div>
 
             {error && <p className="err">{error}</p>}
 
             <button
-              className="btn btn-solid submit"
+              className="btn btn-gold btn-lg submit"
               disabled={!status || sending}
               onClick={submit}
             >
@@ -120,26 +131,57 @@ export default function RsvpForm({
         }
         .choice {
           font: inherit;
-          font-size: 16px;
-          font-weight: 500;
-          padding: 20px;
-          background: transparent;
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding: 26px 24px;
+          min-height: 170px;
+          background: rgba(255, 255, 255, 0.03);
           border: 1px solid var(--line);
-          border-radius: 8px;
+          border-radius: 22px;
           color: var(--ink-2);
           cursor: pointer;
-          transition: border-color 0.2s ease, color 0.2s ease,
-            background 0.2s ease;
+          position: relative;
+          overflow: hidden;
+          transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .choice:hover {
-          border-color: var(--ink-2);
+          border-color: rgba(246, 221, 143, 0.45);
           color: var(--ink);
+          transform: translateY(-4px);
+        }
+        .choice-ic {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: grid;
+          place-items: center;
+          border: 1px solid var(--line);
+          font-size: 16px;
+          margin-bottom: auto;
+          transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .choice-t {
+          font-size: 22px;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          color: var(--ink);
+          margin-top: 26px;
+        }
+        .choice-s {
+          font-size: 14px;
+          color: var(--ink-3);
         }
         .choice[data-sel="true"] {
-          border-color: var(--ink);
-          color: var(--ink);
-          background: color-mix(in srgb, var(--accent) 8%, transparent);
-          box-shadow: inset 0 0 0 1px var(--ink);
+          border-color: var(--gold-bright);
+          background: radial-gradient(circle at 20% 0%, rgba(246, 221, 143, 0.16), rgba(255, 255, 255, 0.03) 70%);
+          box-shadow: 0 20px 60px rgba(233, 194, 95, 0.12), inset 0 0 0 1px var(--gold-bright);
+        }
+        .choice[data-sel="true"] .choice-ic {
+          background: var(--gold-bright);
+          border-color: var(--gold-bright);
+          color: #2a2000;
         }
         .msg-label {
           display: block;
@@ -163,7 +205,7 @@ export default function RsvpForm({
           border-color: var(--accent);
         }
         .err {
-          color: #b4432f;
+          color: #ff9d8a;
           font-size: 14px;
           margin-top: 12px;
         }
@@ -172,10 +214,20 @@ export default function RsvpForm({
           width: 100%;
         }
         .done {
+          position: relative;
           padding: 10px 0;
+          text-align: center;
+        }
+        .done-check {
+          width: 84px;
+          height: 84px;
+          margin: 0 auto 18px;
+          display: block;
+          stroke: var(--gold-bright);
         }
         .done-title {
-          font-size: 20px;
+          font-size: clamp(24px, 3vw, 34px);
+          letter-spacing: -0.02em;
           font-weight: 600;
           margin-bottom: 8px;
         }
@@ -193,12 +245,43 @@ export default function RsvpForm({
           padding: 0;
           color: var(--accent);
           cursor: pointer;
-          box-shadow: inset 0 -1px 0 0 rgba(12, 111, 106, 0.35);
+          box-shadow: inset 0 -1px 0 0 rgba(70, 198, 242, 0.35);
         }
         .aslink:hover {
           box-shadow: inset 0 -1px 0 0 var(--accent);
         }
       `}</style>
+    </div>
+  );
+}
+
+/** Gold confetti burst behind the success check. */
+function Burst({ gold }: { gold: boolean }) {
+  const n = gold ? 26 : 0;
+  return (
+    <div className="burst" aria-hidden>
+      {Array.from({ length: n }, (_, i) => {
+        const a = (i / n) * Math.PI * 2;
+        const r = 90 + (i % 3) * 40;
+        return (
+          <motion.i
+            key={i}
+            initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+            animate={{ x: Math.cos(a) * r, y: Math.sin(a) * r * 0.8, opacity: 0, scale: 0.4 }}
+            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: 42,
+              width: i % 2 ? 6 : 4,
+              height: i % 2 ? 6 : 10,
+              borderRadius: 2,
+              background: i % 3 ? "#f6dd8f" : "#46c6f2",
+              rotate: (i * 37) % 180,
+            }}
+          />
+        );
+      })}
     </div>
   );
 }

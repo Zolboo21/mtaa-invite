@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { getAudio } from "@/lib/audio";
 
 type Props = {
   audioSrc?: string;
@@ -24,15 +25,8 @@ export default function IntroGate({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const a = new Audio(audioSrc);
-    a.loop = true;
-    a.preload = "auto";
-    a.volume = volume;
-    audioRef.current = a;
-    return () => {
-      a.pause();
-      audioRef.current = null;
-    };
+    audioRef.current = getAudio(audioSrc, volume);
+    return () => audioRef.current?.pause();
   }, [audioSrc, volume]);
 
   // counter: eases toward 90% on a timer, finishes once the page + hero video are ready
@@ -78,6 +72,7 @@ export default function IntroGate({
       setError("Дуу эхлүүлэх боломжгүй байна. Browser-ийн autoplay тохиргоог шалгана уу.");
     } finally {
       setClosing(true);
+      window.dispatchEvent(new Event("gate:open"));
       setTimeout(() => setOpen(false), 1100);
     }
   }
