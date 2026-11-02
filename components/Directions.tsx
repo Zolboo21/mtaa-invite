@@ -17,7 +17,7 @@ const items = [
     stat: "200+",
     statL: "цэг салбар",
     color: "#7ed56f",
-    img: "/images/mtaa/scada-gachuurt.png",
+    img: "/images/mtaa/scada-city.png",
   },
   {
     n: "02",
@@ -54,7 +54,8 @@ const items = [
     stat: "24/7",
     statL: "хяналт",
     color: "#f6dd8f",
-    img: "/images/mtaa/scada-city.png",
+    img: "/images/mtaa/control-room.png",
+    pos: "50% 35%",
   },
   {
     n: "06",
