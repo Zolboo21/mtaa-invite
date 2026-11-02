@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { milestones } from "@/data/timeline";
 import { event } from "@/data/event";
 
@@ -117,6 +118,47 @@ export default function Timeline() {
           z-index: 1;
           filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.55));
         }
+        .scard-clip {
+          cursor: zoom-in;
+        }
+        .scard-clip figcaption {
+          margin-top: 10px;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          letter-spacing: 0.08em;
+          color: rgba(238, 242, 246, 0.7);
+          text-align: right;
+        }
+        .lightbox {
+          position: fixed;
+          inset: 0;
+          z-index: 1800;
+          display: grid;
+          place-items: center;
+          padding: 24px;
+          background: rgba(5, 8, 13, 0.88);
+          backdrop-filter: blur(8px);
+          cursor: zoom-out;
+        }
+        .lightbox img {
+          max-width: min(1100px, 100%);
+          max-height: 90vh;
+          border-radius: 6px;
+          box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+        }
+        .lightbox-x {
+          position: absolute;
+          top: 18px;
+          right: 18px;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          border: 0;
+          background: #fff;
+          color: #0b1220;
+          font-size: 18px;
+          cursor: pointer;
+        }
         @media (max-width: 760px) {
           .scard-clip {
             width: 78%;
@@ -176,10 +218,11 @@ const photos: Record<string, string> = {
 };
 
 // Newspaper clippings, shown as tilted paper rather than a faded background.
-const clippings: Record<string, { src: string; alt: string }> = {
+const clippings: Record<string, { src: string; alt: string; label: string }> = {
   "2008–2009": {
     src: "/images/mtaa/ubtimes-2009.png",
     alt: "Улаанбаатар Таймс: «Ус сувгийн станцууд бүрэн автомат боллоо»",
+    label: "Улаанбаатар Таймс",
   },
 };
 
@@ -215,6 +258,13 @@ function Card({
   m: (typeof items)[number];
   progress: MotionValue<number>;
 }) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    addEventListener("keydown", esc);
+    return () => removeEventListener("keydown", esc);
+  }, [open]);
   const n = items.length;
   const founding = m.year === String(event.foundedYear);
   // shrink once the following cards start covering this one
@@ -246,14 +296,47 @@ function Card({
         {clippings[m.year] ? (
           <motion.figure
             className="scard-clip"
+            role="button"
+            tabIndex={0}
+            aria-label={`${clippings[m.year].alt} — томруулж унших`}
+            onClick={() => setOpen(true)}
+            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setOpen(true)}
             initial={{ opacity: 0, y: 40, rotate: 2 }}
             whileInView={{ opacity: 1, y: 0, rotate: -2.5 }}
             viewport={{ once: true, margin: "-20% 0px" }}
             transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
           >
             <Image src={clippings[m.year].src} alt={clippings[m.year].alt} width={1050} height={580} sizes="(max-width: 760px) 80vw, 460px" style={{ width: "100%", height: "auto", display: "block" }} />
+            <figcaption>[ {clippings[m.year].label} ] · томруулах ⤢</figcaption>
           </motion.figure>
         ) : null}
+        {open && createPortal(
+        <AnimatePresence>
+          {open && clippings[m.year] ? (
+            <motion.div
+              className="lightbox"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              role="dialog"
+              aria-modal="true"
+            >
+              <motion.img
+                src={clippings[m.year].src}
+                alt={clippings[m.year].alt}
+                initial={{ scale: 0.92, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95 }}
+              />
+              <button type="button" className="lightbox-x" aria-label="Хаах">
+                ✕
+              </button>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>,
+        document.body,
+        )}
         <div className="yr" style={{ color: founding ? "var(--gold-bright)" : "#fff" }}>
           <Year y={m.year} />
         </div>
