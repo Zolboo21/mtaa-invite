@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Inter_Tight, JetBrains_Mono, Caveat } from "next/font/google";
+import { Montserrat, Inter_Tight, JetBrains_Mono, Caveat, Cormorant_Garamond } from "next/font/google";
 import { event } from "@/data/event";
 import "./globals.css";
 
@@ -26,6 +26,14 @@ const hand = Caveat({
   display: "swap",
 });
 
+// Зочны нэр — сонгодог serif, Ө/Ү (cyrillic-ext) бүрэн
+const nameFont = Cormorant_Garamond({
+  subsets: ["latin", "cyrillic", "cyrillic-ext"],
+  weight: ["600", "700"],
+  variable: "--font-name",
+  display: "swap",
+});
+
 // [ ШОШГО ] маягийн жижиг mono бичвэр
 const mono = JetBrains_Mono({
   subsets: ["latin", "cyrillic", "cyrillic-ext"],
@@ -46,7 +54,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="mn">
-      <body className={`${montserrat.variable} ${display.variable} ${mono.variable} ${hand.variable}`}>{children}</body>
+      <body className={`${montserrat.variable} ${display.variable} ${mono.variable} ${hand.variable} ${nameFont.variable}`}>{children}</body>
     </html>
   );
 }

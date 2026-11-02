@@ -105,14 +105,21 @@ export default function GuestBeat({ guest, line }: { guest: Guest; line: string 
           color: var(--ink-3);
         }
         .beat-name {
-          font-size: var(--fit, 96px);
-          font-weight: 800;
-          letter-spacing: -0.045em;
-          line-height: 0.95;
-          margin: 6px 0 14px;
+          font-family: var(--font-name), Georgia, serif;
+          font-weight: 600;
+          font-size: var(--fit, clamp(32px, 6vw, 96px));
+          word-break: keep-all;
+          overflow-wrap: normal;
+          hyphens: none;
+          letter-spacing: 0.005em;
+          line-height: 1.02;
+          margin: 4px 0 16px;
+        }
+        .beat-name .split {
+          column-gap: 0.24em;
         }
         .beat-name .split-c {
-          background: linear-gradient(180deg, #fff 40%, var(--gold-bright) 140%);
+          background: linear-gradient(180deg, #fffaf0 30%, #f3dfa6 75%, #d9b45f 115%);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
@@ -185,19 +192,20 @@ function FitName({ name }: { name: string }) {
     if (!el) return;
     const fit = () => {
       const avail = el.clientWidth;
+      const cs = getComputedStyle(el);
       const probe = document.createElement("span");
-      probe.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font:800 100px ${getComputedStyle(el).fontFamily};letter-spacing:-0.045em`;
+      probe.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font-family:${cs.fontFamily};font-weight:${cs.fontWeight};font-size:100px;letter-spacing:${cs.letterSpacing === "normal" ? "0" : cs.letterSpacing}`;
       document.body.appendChild(probe);
-      // the longest word must fit on one line
+      // words never break inside, so the longest word decides the minimum size
       const widest = Math.max(...name.split(" ").map((w) => ((probe.textContent = w), probe.offsetWidth)));
       probe.textContent = name;
       const whole = probe.offsetWidth;
       probe.remove();
-      const max = Math.min(124, Math.max(46, innerWidth * 0.16));
-      const oneLine = (avail / whole) * 100 * 0.96;
-      const byWord = (avail / widest) * 100 * 0.96;
-      // prefer one line if it stays large; otherwise wrap between words
-      setSize(Math.floor(Math.min(max, oneLine >= max * 0.7 ? oneLine : byWord)));
+      const max = Math.min(132, Math.max(48, innerWidth * 0.17));
+      const oneLine = (avail / whole) * 100 * 0.97;
+      const byWord = (avail / widest) * 100 * 0.97;
+      // one line while it stays large; otherwise wrap between words only
+      setSize(Math.floor(Math.min(max, oneLine >= max * 0.72 ? oneLine : byWord)));
     };
     fit();
     const ro = new ResizeObserver(fit);
